@@ -8,18 +8,18 @@ teensy_bmp180::teensy_bmp180() {}
 
 boolean teensy_bmp180::begin(uint8_t mode) {
   mode = 3;
-  Wire2.begin(I2C_MASTER, 0C00, WIRE2_PINS, I2C_PULLUP_EXT, 400000);
+  Wire2.begin(I2C_MASTER, 0x00, WIRE2_PINS, I2C_PULLUP_EXT, 400000);
 
   if (read8(0xD0) != 0x55) return false;
-  ac1 = read16(AC1);
-  ac2 = read16(AC2);
-  ac3 = read16(AC3);
-  ac4 = read16(AC4);
+  //ac1 = read16(AC1);
+  //ac2 = read16(AC2);
+  //ac3 = read16(AC3);
+  //ac4 = read16(AC4);
   ac5 = read16(AC5);
   ac6 = read16(AC6);
 
-  b1 = read16(B1);
-  b2 = read16(B2);
+  //b1 = read16(B1);
+  //b2 = read16(B2);
   mc = read16(MC);
   md = read16(MD);
   return true;
@@ -41,7 +41,7 @@ float teensy_bmp180::Temperature(void) {
   delay(5); // Wait 4.5ms according to datasheet
   int32_t UT = read16(TEMPDATA);
 
-  B5 = convert(UT);
+  B5 = calculate(UT);
   temperature = (B5 + 8) >> 4;
   temperature /= 10;
 
