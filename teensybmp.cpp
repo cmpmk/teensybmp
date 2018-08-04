@@ -7,21 +7,22 @@
 teensy_bmp180::teensy_bmp180() {}
 
 boolean teensy_bmp180::begin(uint8_t mode) {
-  mode = 3;
+  mode = 3; // Ultra High Resolution mode
   Wire2.begin(I2C_MASTER, 0x00, WIRE2_PINS, I2C_PULLUP_EXT, 400000);
-
+  
   if (read8(0xD0) != 0x55) return false;
+  // Define 16 bit Calibration data, read from the EEPROM 
   //ac1 = read16(AC1);
   //ac2 = read16(AC2);
   //ac3 = read16(AC3);
   //ac4 = read16(AC4);
-  ac5 = read16(AC5);
-  ac6 = read16(AC6);
+  ac5 = read16(0xB2);
+  ac6 = read16(0xB4);
 
   //b1 = read16(B1);
   //b2 = read16(B2);
-  mc = read16(MC);
-  md = read16(MD);
+  mc = read16(0xBC);
+  md = read16(0xBE);
   return true;
 }
 
@@ -36,10 +37,10 @@ int32_t teensy_bmp180::calculate(int32_t UT) {
 float teensy_bmp180::Temperature(void) {
   int32_t B5; float temperature;
 
-  // Read raw temperature data:
-  write8(CONTROL, READTEMPCMD);
+  // Read raw temperature data: (control, readtempcmd)
+  write8(0xF4, 0x2E);
   delay(5); // Wait 4.5ms according to datasheet
-  int32_t UT = read16(TEMPDATA);
+  int32_t UT = read16(0xF6); // Temperature data
 
   B5 = calculate(UT);
   temperature = (B5 + 8) >> 4;
@@ -51,7 +52,7 @@ float teensy_bmp180::Temperature(void) {
 uint8_t teensy_bmp180::read8(uint8_t a) {
   uint8_t ret;
 
-  Wire2.beginTransmission(bmp_addr);
+  Wire2.beginTransmission(0x77);
 #if (ARDUINO >= 100)
   Wire2.write(a);
 #else
@@ -59,8 +60,8 @@ uint8_t teensy_bmp180::read8(uint8_t a) {
 #endif
   Wire2.endTransmission();
 
-  Wire2.beginTransmission(bmp_addr);
-  Wire2.requestFrom(bmp_addr, 1);
+  Wire2.beginTransmission(0x77);
+  Wire2.requestFrom(0x77, 1);
 #if (ARDUINO >= 100)
   ret = Wire2.read();
 #else
@@ -73,7 +74,7 @@ uint8_t teensy_bmp180::read8(uint8_t a) {
 uint16_t teensy_bmp180::read16(uint8_t a) {
   uint16_t ret;
 
-  Wire2.beginTransmission(bmp_addr);
+  Wire2.beginTransmission(0x77);
 #if (ARDUINO >= 100)
   Wire2.write(a);
 #else
@@ -81,8 +82,8 @@ uint16_t teensy_bmp180::read16(uint8_t a) {
 #endif
   Wire2.endTransmission();
 
-  Wire2.beginTransmission(bmp_addr);
-  Wire2.requestFrom(bmp_addr, 2);
+  Wire2.beginTransmission(0x77);
+  Wire2.requestFrom(0x77, 2);
 
 #if (ARDUINO >= 100)
   ret = Wire2.read();
@@ -97,7 +98,7 @@ uint16_t teensy_bmp180::read16(uint8_t a) {
 }
   
 void teensy_bmp180::write8(uint8_t a, uint8_t d) {
-  Wire2.beginTransmission(bmp_addr);
+  Wire2.beginTransmission(0x77);
 #if (ARDUINO >= 100)
   Wire2.write(a);
   Wire2.write(d);
