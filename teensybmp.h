@@ -2,11 +2,11 @@
 #ifndef teensy_bmp_h
 #define teensy_bmp_h
 
-#if (ARDUINO >= 100)
- #include "Arduino.h"
-#else
- #include "WProgram.h"
-#endif
+//#if (ARDUINO >= 100)
+#include "Arduino.h"
+//#else
+// #include "WProgram.h"
+//#endif
 
 class teensy_bmp180 {
  public:

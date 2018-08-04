@@ -1,5 +1,5 @@
 /* Library for the Teensy 3.6 board to utilize the multiple I2C buses, first 
-   starting with pins 3 and 4 for scl2, sda2 to interface with the Bosch BMP180 sensor */
+   with pins 3. 4 as scl2, sda2 to interface with the Bosch BMP180 sensor */
 
 #include "teensybmp.h"
 #define WIRE2_PINS I2C_PINS_3_4
@@ -26,7 +26,7 @@ boolean teensy_bmp180::begin(uint8_t mode) {
   return true;
 }
 
-// Compute received data from sensor, variables used from datasheet:
+// Compute data read from sensor, variables used from datasheet:
 int32_t teensy_bmp180::calculate(int32_t UT) {
   int32_t x1 = (UT - (int32_t)ac6) * ((int32_t)ac5) >> 15;
   int32_t x2 = ((int32_t)mc << 11) / (x1 + (int32_t)md);
